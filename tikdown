@@ -1,0 +1,27 @@
+#!/bin/sh
+ 
+USERNAME=$1
+
+if [[ -z $USERNAME ]];
+then
+    echo "USAGE: tikdown [Username]"
+    echo -e "\nExample: tikdown shenetworks"
+    echo "Invalid Input, Username Required"
+    exit 1
+fi
+
+LINKS=$(curl -s https://proxitok.herokuapp.com/@$USERNAME| pup 'div.dropdown-content a:last-child attr{href}')
+
+COUNTER=1
+
+mkdir $USERNAME
+
+echo -e "Downloading Started In Background\n"
+
+for LINK in $LINKS;
+do
+    wget -q -t=2 -b https://proxitok.herokuapp.com/$LINK -O "$USERNAME/${COUNTER}.mp4"
+    ((COUNTER++))
+done
+
+exit 0
