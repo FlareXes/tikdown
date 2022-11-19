@@ -10,7 +10,7 @@ then
     exit 1
 fi
 
-LINKS=$(curl -s https://proxitok.herokuapp.com/@$USERNAME| pup 'div.dropdown-content a:last-child attr{href}')
+LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:last-child attr{href}' | grep -E "/download")
 
 COUNTER=1
 
@@ -20,7 +20,7 @@ echo -e "Downloading Started In Background\n"
 
 for LINK in $LINKS;
 do
-    wget -q -t=2 -b https://proxitok.herokuapp.com/$LINK -O "$USERNAME/${COUNTER}.mp4"
+    wget -q -t=2 -b https://proxitok.pussthecat.org/$LINK -O "$USERNAME/${COUNTER}.mp4"
     ((COUNTER++))
 done
 
