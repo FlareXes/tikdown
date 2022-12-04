@@ -1,5 +1,5 @@
 # tikdown
-A TikTok Scrapper That Takes Username As Command Line Argument Then Download Recently Uploaded Video Without Watermark.
+A TikTok Scrapper That Takes Username As Command Line Argument Then Download Recently Uploaded Video.
 Tikdown Script Runs In Background Which Allow Parallel Downloading For Better Speed.
 
 > **Note:** No Censorship issues in **India**
