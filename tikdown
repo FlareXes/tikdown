@@ -1,28 +1,36 @@
 #!/bin/sh
  
 USERNAME=$1
+WATERMARK=$2
 
 if [[ -z $USERNAME ]];
 then
-    echo "USAGE: tikdown [Username]"
-    echo -e "\nExample: tikdown shenetworks"
-    echo "Invalid Input, Username Required"
-    exit 1
+  echo "USAGE: tikdown [Username] (Optional) [Watermark {true | false}]"
+  echo -e "\nExample: tikdown shenetworks"
+  echo -e "Example: tikdown shenetworks true"
+  echo "Invalid Input, Username Required"
+  exit 1
 fi
 
-LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:first-child attr{href}' | grep -E "/download" | sed 's/amp;//g')
 
-COUNTER=1
+if [[ $WATERMARK == true ]];
+then
+  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:first-child attr{href}' | grep -E "/download" | sed 's/amp;//g')
+else
+  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:last-child attr{href}' | grep -E "/download" | sed 's/amp;//g')
+fi
 
-mkdir $USERNAME
+if ! [ -d $USERNAME ]; then
+  mkdir $USERNAME
+fi
 
 echo -e "Downloading Started In Background\n"
 
+COUNTER=1
 for LINK in $LINKS;
 do
-    wget -q -t=2 -b https://proxitok.pussthecat.org/$LINK -O "$USERNAME/${COUNTER}.mp4"
-    ((COUNTER++))
+  wget -q -t=2 -b https://proxitok.pussthecat.org/$LINK -O "$USERNAME/${COUNTER}.mp4"
+  ((COUNTER++))
 done
 
 exit
-
