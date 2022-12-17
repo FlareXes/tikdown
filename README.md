@@ -2,6 +2,8 @@
 A TikTok Scrapper That Takes Username As Command Line Argument Then Download Recently Uploaded Video.
 Tikdown Script Runs In Background Which Allow Parallel Downloading For Better Speed.
 
+Sometimes server doesn't responed properly in that case wait for some time or try again with watermark by passing 2nd argument true
+
 > **Note:** No Censorship issues in **India**
 
 # Usage
@@ -13,18 +15,9 @@ Example: tikdown shenetworks
 This will create a directory of specified username and store the downloaded videos into that.
 
 # Installation
-### Arch Based Distro
+### Linux / MacOS
 ```bash
 sudo pacman -Sy wget, curl, pup
-
-sudo wget https://raw.githubusercontent.com/FlareXes/tikdown/main/tikdown -O /usr/local/bin/tikdown
-
-sudo chmod +x /usr/local/bin/tikdown
-```
-
-### Debian/Ubuntu Based Distro
-```bash
-sudo apt install wget, curl, pup
 
 sudo wget https://raw.githubusercontent.com/FlareXes/tikdown/main/tikdown -O /usr/local/bin/tikdown
 
