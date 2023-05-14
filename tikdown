@@ -15,9 +15,9 @@ fi
 
 if [[ $WATERMARK == true ]];
 then
-  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:first-child attr{href}' | grep -E "/download" | sed 's/amp;//g')
+  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.field p.control a.is-info attr{href}' | grep -E "/download" | sed 's/amp;//g')
 else
-  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.dropdown-menu a:last-child attr{href}' | grep -E "/download" | sed 's/amp;//g')
+  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.field p.control a.is-success attr{href}' | grep -E "/download" | sed 's/amp;//g')
 fi
 
 if ! [ -d $USERNAME ]; then
