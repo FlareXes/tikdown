@@ -1,36 +1,54 @@
-#!/bin/sh
- 
+#!/bin/bash
+
 USERNAME=$1
-WATERMARK=$2
 
 if [[ -z $USERNAME ]];
 then
-  echo "USAGE: tikdown [Username] (Optional) [Watermark {true | false}]"
-  echo -e "\nExample: tikdown shenetworks"
-  echo -e "Example: tikdown shenetworks true"
+  echo "USAGE: tikdown [Username]"
+  echo -e "\nExample: tikdown nahamsec"
   echo "Invalid Input, Username Required"
   exit 1
 fi
 
-
-if [[ $WATERMARK == true ]];
-then
-  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.field p.control a.is-info attr{href}' | grep -E "/download" | sed 's/amp;//g')
-else
-  LINKS=$(curl -s https://proxitok.pussthecat.org/@$USERNAME | pup 'div.field p.control a.is-success attr{href}' | grep -E "/download" | sed 's/amp;//g')
-fi
-
+# Create directory for username if it does not exist
 if ! [ -d $USERNAME ]; then
   mkdir $USERNAME
 fi
 
+
+# Fetch session data, key and token to request videos later
+echo "fetching session data..."
+response=$(curl -sS -i 'https://tokviewer.net/api/check-profile' --compressed -X POST -H 'Content-Type: application/json' --data-raw '{"username":"random_userrname"}')
+
+# Extract session data from response header
+session_data=$(echo "$response" | grep -i 'set-cookie:' | awk -F'session_data=' '{print $2}' | awk -F';' '{print $1}')
+
+# Extract key and token from the JSON body of the response
+json_body=$(echo "$response" | tail -n 1)
+key=$(echo "$json_body" | jq -r '.data.key')
+token=$(echo "$json_body" | jq -r '.data.token')
+
+
+# Fetch video data using the retrieved session data, key, and token
+echo "fetching videos data..."
+videos_json=$(curl -sS 'https://tokviewer.net/api/video' --compressed -X POST -H 'Content-Type: application/json' \
+-H "Cookie: session_data=$session_data" \
+--data-raw "{\"username\":\"$USERNAME\",\"key\":\"$key\",\"token\":\"$token\"}")
+
+if [[ $? -ne 0 ]]; then
+  echo "Failed to retrieve video data"
+  exit 1
+fi
+
 echo -e "Downloading Started In Background\n"
+# Start downloading each video in the background
+echo "$videos_json" | jq -c '.data[]' | while read -r video; do
+    url=$(echo "$video" | jq -r '.play')
+    title=$(echo "$video" | jq -r '.title')
 
-COUNTER=1
-for LINK in $LINKS;
-do
-  wget -q -t=2 -b https://proxitok.pussthecat.org/$LINK -O "$USERNAME/${COUNTER}.mp4"
-  ((COUNTER++))
+    # Sanitize title for 
+    sanitized_title=$(echo "$title" | tr -d '[:punct:]')
+    filename="${sanitized_title}.mp4"
+
+    wget -q -t=2 -b "$url" -O "$USERNAME/$filename"
 done
-
-exit
